@@ -1,4 +1,4 @@
-package com.service;  
+package com.service.tool;  
   
 import android.content.Context;  
 import android.location.Criteria;  

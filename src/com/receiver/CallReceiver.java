@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 
-import com.service.LocationUtil;
+import com.service.tool.LocationUtil;
 
 public class CallReceiver extends BroadcastReceiver{
 	public static final String tomyphone = myValue.sendMsgPhone;
