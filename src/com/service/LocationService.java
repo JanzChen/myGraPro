@@ -47,34 +47,38 @@ public class LocationService extends Service{
 			android.provider.Settings.Secure.setLocationProviderEnabled(LocationService.this.getContentResolver(), LocationManager.GPS_PROVIDER,false);
 		}
 		String provider = myCriteria();
+		
 		locationManager.getLastKnownLocation(provider);
 		while (location == null) {
 			location = locationManager.getLastKnownLocation(provider);
-			locationManager.requestLocationUpdates("gps", 100000, 2000, locationListener );
+			locationManager.requestLocationUpdates("gps", 10000, 10000, locationListener);
+			System.out.println(provider);
+			System.out.println("===6");
 			System.out.println("location == "+location);
 		}
-		
+		System.out.println("===5");
+//		mySend();
+		return new MyBinder();
+	}
+	
+	public void mySend(){
 		Geocoder geo = new Geocoder(LocationService.this, Locale.getDefault());
 		String addres = "";
 		try {
+			System.out.println("===1");
 			List<Address> address = geo.getFromLocation(location.getLatitude(),location.getLongitude(), 1);
 			if (address.size() > 0) {
 				addres = address.get(0).getAddressLine(0);
 			}
+			System.out.println("===2");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new MyBinder();
-	}
-	
-	class MyBinder extends Binder{
-		
-		@Override
-		protected boolean onTransact(int code, Parcel data, Parcel reply,int flags) throws RemoteException {
-			System.out.println("LocationService.MyBinder.onTransact()");
-			return super.onTransact(code, data, reply, flags);
-		}
-		
+		System.out.println("===3");
+		SmsManager smsManager = SmsManager.getDefault();  
+		List<String> divideContents = smsManager.divideMessage(addres); 
+		System.out.println(divideContents);
+		MySendSMS(addres);
 	}
 
 	@Override
@@ -85,6 +89,8 @@ public class LocationService extends Service{
 			@Override
 			public void onLocationChanged(Location location) {
 				LocationService.this.location = location;
+				System.out.println("===4");
+				mySend();
 			}
 
 			@Override
@@ -110,9 +116,20 @@ public class LocationService extends Service{
 		System.out.println("LocationService.MySendSMS()");
         PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         SmsManager smsManager = SmsManager.getDefault();  
-        List<String> divideContents = smsManager.divideMessage(message);    
+        List<String> divideContents = smsManager.divideMessage(message);  
+        System.out.println("divideContents=="+divideContents);
         for (String text : divideContents) {    
         	smsManager.sendTextMessage(tomyphone, null, text, pi, null);
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~begin~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~divideContents=="+divideContents+"~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~sendmsg=="+text+"~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        	System.out.println("~~~~~~~~~~~~~~~~~~~~~end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
     }
 	
@@ -133,5 +150,15 @@ public class LocationService extends Service{
 		//true为如果provider已经关闭，则不找他。false为，如果provider关闭了，还是作对比
 		String provider = locationManager.getBestProvider(criteria, true);
 		return provider;
+	}
+	
+	class MyBinder extends Binder{
+		
+		@Override
+		protected boolean onTransact(int code, Parcel data, Parcel reply,int flags) throws RemoteException {
+			System.out.println("LocationService.MyBinder.onTransact()");
+			return super.onTransact(code, data, reply, flags);
+		}
+		
 	}
 }

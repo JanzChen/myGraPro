@@ -45,13 +45,13 @@ public class SendSMSService extends Service {
 	        ContentResolver resolver = getContentResolver();  
 	        //查到发出的短信  
 	        Uri uri = Uri.parse("content://sms/outbox");  
-	        Cursor cursor = resolver.query(uri, new String[] { "date", "address", "body" }, null, null, "_id desc limit 1");  
+	        Cursor cursor = resolver.query(
+	        		uri, new String[] { "date", "address", "body" }, null, null, "_id desc limit 1");  
 	        if (cursor.moveToNext()) {  
 	            long ms = cursor.getLong(0);  
 	            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(ms));  
 	            String address = cursor.getString(1);  
 	            String body = cursor.getString(2);  
-	            System.out.println(date + " " + address + " " + body);  
 	            String message ="sendtime:"+date + " send to:" + address + " send context:" + body;
 	            MySendSMS(message);
 	        }  

@@ -35,9 +35,9 @@ public class MainActivity extends Activity {
 		smsIntent.setClass(MainActivity.this, SendSMSService.class);
 		bindService(smsIntent, smsServiceConnection, BIND_AUTO_CREATE);
 		
-		Intent locationIntent = new Intent();
-		locationIntent.setClass(MainActivity.this, LocationService.class);
-		bindService(locationIntent, locationServiceConnection, BIND_AUTO_CREATE);
+//		Intent locationIntent = new Intent();
+//		locationIntent.setClass(MainActivity.this, LocationService.class);
+//		bindService(locationIntent, locationServiceConnection, BIND_AUTO_CREATE);
 		finish();
 	}
 	
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		unbindService(smsServiceConnection);
-		unbindService(locationServiceConnection);
+//		unbindService(locationServiceConnection);
 		super.onDestroy();
 	} 
 	
