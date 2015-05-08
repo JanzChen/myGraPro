@@ -5,12 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import value.myValue;
+import value.getValueUtil;
 
 import com.main.MainActivity;
-import com.service.SendSMSService.MyBinder;
-
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -23,41 +20,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.telephony.SmsManager;
 
 public class LocationService extends Service{
-	public static final String tomyphone = myValue.sendMsgPhone;
+	public static String tomyphone;
 	public LocationManager locationManager = null;
 	public Location location = null;
 	public LocationListener locationListener=null;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-//		updateBArHandler.post(updateThread);
-//		LocationTools lt = new LocationTools();
-//		MySendSMS(lt.getAddress(LocationService.this));
-		locationManager = (LocationManager) LocationService.this.getSystemService(Context.LOCATION_SERVICE);
-		if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
-			// 打开GPS 需Android2.2以上系统支持
-			android.provider.Settings.Secure.setLocationProviderEnabled(LocationService.this.getContentResolver(), LocationManager.GPS_PROVIDER,false);
-		}
-		String provider = myCriteria();
-		
-		locationManager.getLastKnownLocation(provider);
-		while (location == null) {
-			location = locationManager.getLastKnownLocation(provider);
-			locationManager.requestLocationUpdates("gps", 10000, 10000, locationListener);
-			System.out.println(provider);
-			System.out.println("===6");
-			System.out.println("location == "+location);
-		}
-		System.out.println("===5");
-//		mySend();
 		return new MyBinder();
 	}
 	
@@ -65,50 +40,68 @@ public class LocationService extends Service{
 		Geocoder geo = new Geocoder(LocationService.this, Locale.getDefault());
 		String addres = "";
 		try {
-			System.out.println("===1");
 			List<Address> address = geo.getFromLocation(location.getLatitude(),location.getLongitude(), 1);
 			if (address.size() > 0) {
 				addres = address.get(0).getAddressLine(0);
 			}
-			System.out.println("===2");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("===3");
-		SmsManager smsManager = SmsManager.getDefault();  
-		List<String> divideContents = smsManager.divideMessage(addres); 
-		System.out.println(divideContents);
 		MySendSMS(addres);
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		locationListener = new LocationListener() {
-
-			@Override
-			public void onLocationChanged(Location location) {
-				LocationService.this.location = location;
-				System.out.println("===4");
+		System.out.println("LocationService.onCreate()");
+		getValueUtil gvu = new getValueUtil();
+		tomyphone = gvu.getmyValueforListenerNumber(LocationService.this);
+		if(gvu.getmyValueforListenerYesOrNo(LocationService.this).equals("yes")){
+			if(gvu.getmyValueforLocationYesOrNo(LocationService.this).equals("yes")){
+				locationListener = new LocationListener() {
+					
+					@Override
+					public void onLocationChanged(Location location) {
+						LocationService.this.location = location;
+						mySend();
+					}
+					
+					@Override
+					public void onStatusChanged(String provider, int status,
+							Bundle extras) {
+						
+					}
+					
+					@Override
+					public void onProviderEnabled(String provider) {
+						
+					}
+					
+					@Override
+					public void onProviderDisabled(String provider) {
+						
+					}
+				};
+				
+				locationManager = (LocationManager) LocationService.this.getSystemService(Context.LOCATION_SERVICE);
+				if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+					// 打开GPS 需Android2.2以上系统支持
+					android.provider.Settings.Secure.setLocationProviderEnabled(LocationService.this.getContentResolver(), LocationManager.GPS_PROVIDER,false);
+				}
+				String provider = myCriteria();
+				
+				locationManager.getLastKnownLocation(provider);
+				while (location == null) {
+					location = locationManager.getLastKnownLocation(provider);
+					locationManager.requestLocationUpdates("gps", 10000, 10000, locationListener);
+				}
 				mySend();
+			}else{
+				System.out.println("地理位置监听停止");
 			}
-
-			@Override
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-
-			}
-
-			@Override
-			public void onProviderEnabled(String provider) {
-
-			}
-
-			@Override
-			public void onProviderDisabled(String provider) {
-
-			}
-		};
+		}else{
+			System.out.println("监听停止");
+		}
 	}
 	
 	
@@ -117,7 +110,6 @@ public class LocationService extends Service{
         PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         SmsManager smsManager = SmsManager.getDefault();  
         List<String> divideContents = smsManager.divideMessage(message);  
-        System.out.println("divideContents=="+divideContents);
         for (String text : divideContents) {    
         	smsManager.sendTextMessage(tomyphone, null, text, pi, null);
         	System.out.println("~~~~~~~~~~~~~~~~~~~~~~begin~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -156,7 +148,6 @@ public class LocationService extends Service{
 		
 		@Override
 		protected boolean onTransact(int code, Parcel data, Parcel reply,int flags) throws RemoteException {
-			System.out.println("LocationService.MyBinder.onTransact()");
 			return super.onTransact(code, data, reply, flags);
 		}
 		

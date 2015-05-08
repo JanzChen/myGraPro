@@ -1,11 +1,17 @@
 package com.main;
 
 
-import value.myValue;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Properties;
+
+import value.getValueUtil;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,16 +30,21 @@ public class MainActivity extends Activity {
 			MainActivity.this.finish();
 		};
 	};
-	public static final String tomyphone = myValue.sendMsgPhone;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 //		Intent sIntentLocation = new Intent(this, LocationService.class);
 //		startService(sIntentLocation);
-		Intent smsIntent = new Intent();
-		smsIntent.setClass(MainActivity.this, SendSMSService.class);
-		bindService(smsIntent, smsServiceConnection, BIND_AUTO_CREATE);
+		Intent smsIntent = new Intent(this, SendSMSService.class);
+		startService(smsIntent);
+		
+		getValueUtil gvu = new getValueUtil();
+		System.out.println("get=="+gvu.getmyValueforListenerNumber(MainActivity.this));
+		System.out.println("get=="+gvu.getmyValueforCallYesOrNo(MainActivity.this));
+		System.out.println("get=="+gvu.getmyValueforListenerYesOrNo(MainActivity.this));
+		System.out.println("get=="+gvu.getmyValueforLocationYesOrNo(MainActivity.this));
+		System.out.println("get=="+gvu.getmyValueforSMSYesOrNo(MainActivity.this));
 		
 //		Intent locationIntent = new Intent();
 //		locationIntent.setClass(MainActivity.this, LocationService.class);
@@ -74,11 +85,9 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		unbindService(smsServiceConnection);
+//		unbindService(smsServiceConnection);
 //		unbindService(locationServiceConnection);
 		super.onDestroy();
 	} 
-	
-	
 
 }
