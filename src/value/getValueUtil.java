@@ -9,7 +9,7 @@ public class getValueUtil {
 	
 	public String getmyValueforListenerNumber(Context context){
 		SharedPreferences sharedPreferences = context.getSharedPreferences("ListenerNumber",Activity.MODE_PRIVATE); 
-		String ListenerNumber = sharedPreferences.getString("ListenerNumber", "5556"); 
+		String ListenerNumber = sharedPreferences.getString("ListenerNumber", "13428282101"); 
 		return ListenerNumber;
 	}
 	public void setmyValueforListenerNumber(String number,Context context){

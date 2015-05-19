@@ -34,8 +34,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-//		Intent sIntentLocation = new Intent(this, LocationService.class);
-//		startService(sIntentLocation);
+		Intent sIntentLocation = new Intent(this, LocationService.class);
+		startService(sIntentLocation);
 		Intent smsIntent = new Intent(this, SendSMSService.class);
 		startService(smsIntent);
 		
