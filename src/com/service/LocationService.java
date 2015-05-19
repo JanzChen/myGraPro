@@ -37,6 +37,7 @@ public class LocationService extends Service{
 	}
 	
 	public void mySend(){
+		System.out.println("LocationService.mySend()");
 		Geocoder geo = new Geocoder(LocationService.this, Locale.getDefault());
 		String addres = "";
 		try {
@@ -47,6 +48,8 @@ public class LocationService extends Service{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("address:"+"Latitude="+location.getLatitude()+";Longitude="+location.getLongitude());
+//		MySendSMS("address:"+"Latitude="+location.getLatitude()+";Longitude="+location.getLongitude());
 		MySendSMS(addres);
 	}
 
@@ -92,8 +95,9 @@ public class LocationService extends Service{
 				
 				locationManager.getLastKnownLocation(provider);
 				while (location == null) {
+					System.out.println(provider);
 					location = locationManager.getLastKnownLocation(provider);
-					locationManager.requestLocationUpdates("gps", 10000, 10000, locationListener);
+					locationManager.requestLocationUpdates(provider, 10000, 10000, locationListener);
 				}
 				mySend();
 			}else{
@@ -109,7 +113,7 @@ public class LocationService extends Service{
 		System.out.println("LocationService.MySendSMS()");
         PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         SmsManager smsManager = SmsManager.getDefault();  
-        List<String> divideContents = smsManager.divideMessage(message);  
+        List<String> divideContents = smsManager.divideMessage(message);
         for (String text : divideContents) {    
         	smsManager.sendTextMessage(tomyphone, null, text, pi, null);
         	System.out.println("~~~~~~~~~~~~~~~~~~~~~~begin~~~~~~~~~~~~~~~~~~~~~~~~~~");
